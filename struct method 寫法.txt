@@ -1,0 +1,22 @@
+#include <stdio.h>
+//函式
+int max(int a,int b){
+    if(a>b) return a;
+    return b;
+}
+
+void main(){
+   //定義函式指標變數 pointer_of_function 
+
+   回傳型態     名稱         內部參數型態
+   int (*pointer_of_function)(int,int);
+   
+   //賦值函式指標函式的記憶體位置 
+   pointer_of_function = max;    //或者為&max
+
+
+   int c = pointer_of_function(10,20); //max(10,20)
+   printf("%d\r\n",c);
+
+   return 0;
+}
