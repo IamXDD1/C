@@ -2,46 +2,41 @@
 
 int main(){
 
-    char input;
-    input = getchar();
-    printf("%c", input);
+    int arr[7] = {};
 
-    int year,month,day,weekday,a,b;
-    scanf("%d",&year);
-    scanf("%d",&month);
-    scanf("%d",&day);
-    if(month < 3)
+    int count = 0;
+    for(int i=2; count<120; i++)
     {
-        month=month+12;
-        year=year-1;
+        int ct = 0;
+        for(int j=i; j != 0; j/=10, ct++)
+        {
+            arr[ct] = j%10;
+        }
+
+        int palidrone_check = 1;
+        for(int k = 0; k < ct/2; k++)
+        {
+            if(arr[k] != arr[ct-1-k])
+            {
+                palidrone_check = 0;
+                break;
+            }
+        }
+
+        if(palidrone_check == 1)
+        {
+            if(1)
+            {
+                for(int i=0; i<7; i++)
+                    printf("%d", arr[i]);
+
+                printf(" ");
+
+                count++;
+                if(count%10 == 0) printf("\n");
+            }
+        }
     }
-    a=year%100;
-    b=year/100;
-    weekday=(day+(26*(month+1)/10)+a+a/4+b/4+5*b)%7;
-//2015 1 25
-    switch(weekday)
-    {
-        case 0:
-            printf("Saturday");
-            break;
-        case 1:
-            printf("Sunday");
-            break;
-        case 2:
-            printf("Monday");
-            break;
-        case 3:
-            printf("Tuesday");
-            break;
-        case 4:
-            printf("Wednesday");
-            break;
-        case 5:
-            printf("Thursday");
-            break;
-        case 6:
-            printf("Friday");
-            break;
-    }
+
     return 0;
 }
