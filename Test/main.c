@@ -2,41 +2,26 @@
 
 int main(){
 
-    int arr[7] = {};
+//  for( 初始值 ; 條件式 ; 更新值 )
+//  for( ; ; )
+//10 9 8
+// 1 2 3 4 5
 
-    int count = 0;
-    for(int i=2; count<120; i++)
+    for(int n=1, k=10; n <= 10; n++, k--)
     {
-        int ct = 0;
-        for(int j=i; j != 0; j/=10, ct++)
+        for(int n=1; n<11-k; n++)
         {
-            arr[ct] = j%10;
+            printf(" ");
         }
 
-        int palidrone_check = 1;
-        for(int k = 0; k < ct/2; k++)
+        for(int n=1; n<=k; n++)
         {
-            if(arr[k] != arr[ct-1-k])
-            {
-                palidrone_check = 0;
-                break;
-            }
+            printf("*");
         }
 
-        if(palidrone_check == 1)
-        {
-            if(1)
-            {
-                for(int i=0; i<7; i++)
-                    printf("%d", arr[i]);
-
-                printf(" ");
-
-                count++;
-                if(count%10 == 0) printf("\n");
-            }
-        }
+        printf("\n");
     }
 
     return 0;
 }
+
