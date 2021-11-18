@@ -1,4 +1,5 @@
 # depslib dependency file v1.0
-1635489851 source:c:\users\xdd\desktop\資工\程式語言\c\test\main.c
+1636886360 source:c:\users\xdd\desktop\資工\程式語言\c\test\main.c
 	<stdio.h>
+	<stdlib.h>
 
