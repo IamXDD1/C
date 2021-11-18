@@ -11,9 +11,7 @@ _Bool judge_lowercase(char input)
 
 int main(){
 
-    char input = getchar();
-
-    if(judge_lowercase(input)) printf("true");
-    else printf("false");
+    _Bool test = 2;
+    printf("%d", test);
     return 0;
 }

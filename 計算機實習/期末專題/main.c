@@ -11,8 +11,8 @@ char decode(int* arr, int curr);
 int mass_num(int* arr);
 _Bool check_C(char* code, char C);
 _Bool check_K(char* code, char C, char K);
-_Bool check_out_of_range(int num, double intended);
-_Bool check_start_end_success(int* arr, int size);
+int check_out_of_range(int num, double intended);
+int check_start_end_success(int* arr, int size);
 
 int main()
 {
@@ -50,7 +50,7 @@ int main()
             _Bool run_decode = 1;
             for(int i=0; i<size; i++)
             {
-                int range = check_out_of_range(arr_width[i], intended);
+                int range = check_out_of_range(arr_width[i], (double)intended);
                 if(range == 0){
                     game = SKIP;
                     printf("bad code\n");
@@ -64,13 +64,15 @@ int main()
             }
 
             if(run_decode){
+                //======================================施工中===================================================
                 int begin_to_end = check_start_end_success(arr_width, size);
+
                 if(begin_to_end == 1){
                     //begin to end
 
                     //01轉字元
                     char C,K;
-                    for(int i=0, j=0; i<size; i+=6, j++){
+                    for(int i=6, j=0; i<size; i+=6, j++){
 
                         if(j == Decoded_num_size) C = decode(arr_width, i);
                         else if(j == Decoded_num_size+1) K = decode(arr_width, i);
@@ -89,8 +91,9 @@ int main()
                 }
                 else if(begin_to_end == 2){
                     //end to begin
+                    //======================================施工中===================================================
                     char C,K;
-                    for(int i=0, j=0; i<size; i+=6, j++){
+                    for(int i=6, j=0; i<size; i+=6, j++){
 
                         if(j == Decoded_num_size) C = decode(arr_width, i);
                         else if(j == Decoded_num_size+1) K = decode(arr_width, i);
@@ -106,6 +109,7 @@ int main()
                         game = SKIP;
                         printf("bad K\n");
                     }
+                    //======================================施工中===================================================
                 }
                 else{
                     game = SKIP;
@@ -124,14 +128,28 @@ int main()
 }
 
 char decode(int* arr, int curr){
+    for(int j=0; j<12; j++)
+    {
+        for(int i=0; i<5; i++)
+        {
+            if(arr[curr+i] != Encoding[j][i]) break;
 
+            if(i==4){
+                if(j != 10) return '0'+j;
+                else return '-';
+            }
+        }
+    }
 }
 int mass_num(int* arr){
     int num = 0;
     int count = 0;
     for(int i=0; i<200; i++)
     {
-        if(arr[i] > count) num = i+1;
+        if(arr[i] > count) {
+            num = i+1;
+            count = arr[i];
+        }
     }
     return num;
 }
@@ -170,12 +188,12 @@ _Bool check_K(char* code, char C, char K){
     if(sum == K-'0') return 1;
     else return 0;
 }
-_Bool check_out_of_range(int num, double intended){
+int check_out_of_range(int num, double intended){
     if(num >= intended*0.95 && num <= intended*1.05) return 1;
     else if(num >= intended*1.9 && num <= intended*2.1) return 2;
     else return 0;
 }
-_Bool check_start_end_success(int* arr, int size){
+int check_start_end_success(int* arr, int size){
     _Bool left_to_right = 1;
     _Bool right_to_left = 1;
     for(int i=0; i<5; i++)
@@ -212,6 +230,7 @@ _Bool check_start_end_success(int* arr, int size){
             }
         }
     }
+
     if(left_to_right) return 1;
     else if(right_to_left) return 2;
     else return 0;
