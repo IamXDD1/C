@@ -57,6 +57,7 @@ int main()
 
             if(run_decode){
                 //======================================施工中===================================================
+                //decode function 如果中間沒有回傳 則輸出bad code 且跳出運作
                 int begin_to_end = check_start_end_success(arr_width, size);
 
                 if(begin_to_end == 1){
@@ -66,10 +67,10 @@ int main()
                     char C,K;
                     for(int i=6, j=0; i<size; i+=6, j++){
 
-                        if(j == Decoded_num_size) C = decode(arr_width, i);
-                        else if(j == Decoded_num_size+1) K = decode(arr_width, i);
+                        if(j == Decoded_num_size) C = decode(arr_width, i, 1);
+                        else if(j == Decoded_num_size+1) K = decode(arr_width, i, 1);
                         else if(j == Decoded_num_size+2) break;
-                        else Decoded_num[j] = decode(arr_width, i);
+                        else Decoded_num[j] = decode(arr_width, i, 1);
                     }
                     //判斷CK
                     if(check_C(Decoded_num, C)){
@@ -88,12 +89,14 @@ int main()
                     //end to begin
                     //======================================施工中===================================================
                     char C,K;
-                    for(int i=6, j=0; i<size; i-=6, j++){
+                    for(int i=size-1, j=0; i>=6; i-=6, j++){
 
-                        if(j == Decoded_num_size) C = decode(arr_width, i);
-                        else if(j == Decoded_num_size+1) K = decode(arr_width, i);
+                        if(j == Decoded_num_size) C = decode(arr_width, i, 0);
+                        else if(j == Decoded_num_size+1) K = decode(arr_width, i, 0);
                         else if(j == Decoded_num_size+2) break;
-                        else Decoded_num[j] = decode(arr_width, i);
+                        else Decoded_num[j] = decode(arr_width, i, 0);
+
+                        //printf("%c", Decoded_num[j]);
                     }
                     //判斷CK
                     if(check_C(Decoded_num, C)){
@@ -101,7 +104,7 @@ int main()
                         printf("bad C\n");
                     }
                     else{
-                        else if(check_K(Decoded_num, C, K)){
+                        if(check_K(Decoded_num, C, K)){
                             game = SKIP;
                             printf("bad K\n");
                         }

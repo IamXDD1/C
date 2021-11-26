@@ -1,17 +1,15 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-_Bool judge_lowercase(char input)
-{
-    if(input >= 'a' && input <= 'z')
-        return 1;
-    else
-        return 0;
-}
+int Test(int i, int n);
 
 int main(){
 
-    _Bool test = 2;
-    printf("%d", test);
+
+    Test(2,3);
     return 0;
+}
+int Test(int i, int n=2){
+    if(i<5) return test(i+1, n);
+    else return 0;
 }
