@@ -57,7 +57,7 @@ int main()
 
             if(run_decode){
                 //======================================施工中===================================================
-                //decode function 如果中間沒有回傳 則輸出bad code 且跳出運作
+                //加上bad code： decode function 如果中間沒有回傳 則輸出bad code 且跳出運作
                 int begin_to_end = check_start_end_success(arr_width, size);
 
                 if(begin_to_end == 1){
@@ -71,8 +71,11 @@ int main()
                         else if(j == Decoded_num_size+1) K = decode(arr_width, i, 1);
                         else if(j == Decoded_num_size+2) break;
                         else Decoded_num[j] = decode(arr_width, i, 1);
+
+                        //printf("%c %c %c", Decoded_num[j], C, K);
                     }
                     //判斷CK
+                    //修正：strlen(decoded_num)有問題 正常size = 2 出來卻是6
                     if(check_C(Decoded_num, C)){
                         game = SKIP;
                         printf("bad C\n");
@@ -89,7 +92,7 @@ int main()
                     //end to begin
                     //======================================施工中===================================================
                     char C,K;
-                    for(int i=size-1, j=0; i>=6; i-=6, j++){
+                    for(int i=size-7, j=0; i>=6; i-=6, j++){
 
                         if(j == Decoded_num_size) C = decode(arr_width, i, 0);
                         else if(j == Decoded_num_size+1) K = decode(arr_width, i, 0);
