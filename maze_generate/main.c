@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<time.h>
 #include<math.h>
+#include<windows.h>
 
 //地图长度L，包括迷宫主体40，外侧的包围的墙体2，最外侧包围路径2（之后会解释）
 #define L 14
@@ -8,26 +9,46 @@
 //墙和路径的标识
 #define WALL  0
 #define ROUTE 1
+#define PASS  2
+
+#define FULL(color)  color + color*16
+#define DEFAULT      7
 
 //控制迷宫的复杂度，数值越大越简单，最小值为0
 static int Rank = 0;
+_Bool finish = 0;
 
+void gotoxy(int x, int y) {
+    COORD pos = {x,y};
+    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);// 獲取標準輸出裝置控制代碼
+    SetConsoleCursorPosition(hOut, pos);//兩個引數分別是指定哪個窗體，具體位置
+}
+void SetColor(int color)
+{
+  HANDLE hConsole;
+  hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+  SetConsoleTextAttribute(hConsole, color);
+}
 //生成迷宫
 void CreateMaze(int **maze, int x, int y);
 void print_maze(int** Maze){
-    for (int i = 0; i < L; i++) {
-		for (int j = 0; j < L; j++) {
+    for (int i = 1; i < L-1; i++) {
+		for (int j = 1; j < L-1; j++) {
 			if (Maze[i][j] == ROUTE) {
 				printf(".");
 			}
-			else {
+			else if(Maze[i][j] == WALL){
 				printf("#");
+			}
+			else{
+                printf("X");
 			}
 		}
 		printf("\n");
 	}
 	printf("\n");
 }
+void DFS(int** maze, int i, int j, int dir);
 
 int main(void) {
 	srand((unsigned)time(NULL));
@@ -49,10 +70,12 @@ int main(void) {
 	CreateMaze(Maze, 2, 2);
 
 	//画迷宫的入口和出口
+	int entrance = 0;
 	for (int i = L - 3; ; i--) {
         int temp = rand() %(L-3) +1;
 		if (Maze[temp][2] == ROUTE) {
 			Maze[temp][1] = ROUTE;
+			entrance = temp;
 			break;
 		}
 	}
@@ -69,11 +92,63 @@ int main(void) {
 	//画迷宫
 	print_maze(Maze);
 
+	SetColor(FULL(rand()%16));
+
+	DFS(Maze, entrance, 1, 0);
+
+	SetColor(DEFAULT);
+
+	gotoxy(0, L);
+
 	for (int i = 0; i < L; i++) free(Maze[i]);
 	free(Maze);
 
 	system("pause");
 	return 0;
+}
+
+void DFS(int** maze, int i, int j, int dir){
+    if(i>=L-1 || i<1 || j>=L-1 || j<1 || maze[i][j] != ROUTE || finish == 1) return;
+
+    _sleep(50);
+
+    maze[i][j] = PASS;
+
+    gotoxy(j-1,i-1);
+
+    printf(" ");
+
+    //print_maze(maze);
+
+    if(j == L-2) finish = 1;
+
+    switch(dir)
+    {
+        case 0:
+            DFS(maze, i, j-1, 3);
+            DFS(maze, i+1, j, 0);
+            DFS(maze, i, j+1, 1);
+            DFS(maze, i-1, j, 2);
+            break;
+        case 1:
+            DFS(maze, i+1, j, 0);
+            DFS(maze, i, j+1, 1);
+            DFS(maze, i-1, j, 2);
+            DFS(maze, i, j-1, 3);
+            break;
+        case 2:
+            DFS(maze, i, j+1, 1);
+            DFS(maze, i-1, j, 2);
+            DFS(maze, i, j-1, 3);
+            DFS(maze, i+1, j, 0);
+            break;
+        case 3:
+            DFS(maze, i-1, j, 2);
+            DFS(maze, i, j-1, 3);
+            DFS(maze, i+1, j, 0);
+            DFS(maze, i, j+1, 1);
+            break;
+    }
 }
 
 void CreateMaze(int **maze, int x, int y) {
