@@ -26,7 +26,7 @@ int main()
 
         int Decoded_num_size = (size+1)/6-4;
 
-        if((size+1)%6 != 0 || Decoded_num_size <= 0){
+        if((size+1)%6 != 0 || Decoded_num_size <= 0 || size > 150){
             printf("Case %d:bad code\n", x);
             game = SKIP;
         }
@@ -58,55 +58,75 @@ int main()
                 //======================================施工中===================================================
                 //加上bad code： decode function 如果中間沒有回傳 則輸出bad code 且跳出運作
                 int begin_to_end = check_start_end_success(arr_width, size);
+                int str_length = 0;
 
                 if(begin_to_end == 1){
                     //begin to end
 
                     //01轉字元
-                    char C,K;
+                    char C = '0', K = '0';
+
                     for(int i=6, j=0; i<size; i+=6, j++){
 
                         if(j == Decoded_num_size) C = decode(arr_width, i, 1);
                         else if(j == Decoded_num_size+1) K = decode(arr_width, i, 1);
                         else if(j == Decoded_num_size+2) break;
-                        else Decoded_num[j] = decode(arr_width, i, 1);
+                        else{
+                                str_length++;
+                                Decoded_num[j] = decode(arr_width, i, 1);
+                        }
 
+                        if(Decoded_num[j] == ';' || C == ';' || K == ';'){
+                            game = SKIP;
+                            printf("Case %d:bad code\n", x);
+                            break;
+                        }
                         //printf("%c %c %c", Decoded_num[j], C, K);
                     }
                     //判斷CK
-                    //修正：strlen(decoded_num)有問題 正常size = 2 出來卻是6
-                    if(check_C(Decoded_num, C)){
-                        game = SKIP;
-                        printf("Case %d:bad C\n", x);
-                    }
-                    else{
-                        if(check_K(Decoded_num, C, K)){
+                    if(game != SKIP)
+                    {
+                        if(check_C(Decoded_num, C, str_length)){
+                            game = SKIP;
+                            printf("Case %d:bad C\n", x);
+                        }
+                        else if(check_K(Decoded_num, C, K, str_length)){
                             game = SKIP;
                             printf("Case %d:bad K\n", x);
                         }
                     }
 
+
                 }
                 else if(begin_to_end == 2){
                     //end to begin
                     //======================================施工中===================================================
-                    char C,K;
+                    char C = '0',K = '0';
                     for(int i=size-7, j=0; i>=6; i-=6, j++){
 
                         if(j == Decoded_num_size) C = decode(arr_width, i, 0);
                         else if(j == Decoded_num_size+1) K = decode(arr_width, i, 0);
                         else if(j == Decoded_num_size+2) break;
-                        else Decoded_num[j] = decode(arr_width, i, 0);
+                        else{
+                                str_length++;
+                                Decoded_num[j] = decode(arr_width, i, 0);
+                        }
 
+                        if(Decoded_num[j] == ';' || C == ';' || K == ';'){
+                            game = SKIP;
+                            printf("Case %d:bad code\n", x);
+                            break;
+                        }
                         //printf("%c", Decoded_num[j]);
                     }
                     //判斷CK
-                    if(check_C(Decoded_num, C)){
-                        game = SKIP;
-                        printf("Case %d:bad C\n", x);
-                    }
-                    else{
-                        if(check_K(Decoded_num, C, K)){
+                    if(game != SKIP)
+                    {
+                        if(check_C(Decoded_num, C, str_length)){
+                            game = SKIP;
+                            printf("Case %d:bad C\n", x);
+                        }
+                        else if(check_K(Decoded_num, C, K, str_length)){
                             game = SKIP;
                             printf("Case %d:bad K\n", x);
                         }

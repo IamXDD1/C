@@ -1,137 +1,255 @@
-#include<stdio.h>
-#include<time.h>
-#include<math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
-//地图长度L，包括迷宫主体40，外侧的包围的墙体2，最外侧包围路径2（之后会解释）
-#define L 14
+_Bool check[4][13] = {0};
+int number(char num){
+    switch(num)
+    {
+        case 'A': return 14;
+        case '1' ... '9': return num-'0';
+        case 'T': return 10;
+        case 'J': return 11;
+        case 'Q': return 12;
+        case 'K': return 13;
+    }
+}
+int compare(char* char_cards);
+void deal_5cards(int* cards);
+void change(char* c_cards, int* i_cards);
+void sort(char* c_cards);
+int four_of_a_kind(char* c_cards);
+int full_house(char* c_cards);
+int flush(char* c_cards);
+int straight(char* c_cards);
+int three_of_a_kind(char* c_cards);
+int two_pair(char* c_cards);
+int one_pair(char* c_cards);
 
-//墙和路径的标识
-#define WALL  0
-#define ROUTE 1
 
-//控制迷宫的复杂度，数值越大越简单，最小值为0
-static int Rank = 0;
+int main()
+{
+    srand(time(NULL));
+    int p1_int_cards[5] = {0};
+    char p1_char_cards[5][2];
 
-//生成迷宫
-void CreateMaze(int **maze, int x, int y);
-void print_maze(int** Maze){
-    for (int i = 0; i < L; i++) {
-		for (int j = 0; j < L; j++) {
-			if (Maze[i][j] == ROUTE) {
-				printf(".");
-			}
-			else {
-				printf("#");
-			}
-		}
-		printf("\n");
-	}
-	printf("\n");
+    deal_5cards(p1_int_cards);
+
+    p1_int_cards[0] = 5;
+    p1_int_cards[1] = 20;
+    p1_int_cards[2] = 46;
+    p1_int_cards[3] = 52;
+    p1_int_cards[4] = 13;
+
+    change((char*)p1_char_cards, p1_int_cards);
+
+    sort((char*)p1_char_cards);
+
+    for(int i=0; i<5; i++){
+        printf("%c%c ", p1_char_cards[i][0], p1_char_cards[i][1]);
+    }
+    printf("\n");
+
+    int player1 = compare((char*)p1_char_cards);
+
+    int p2_int_cards[5] = {0};
+    char p2_char_cards[5][2];
+
+    deal_5cards(p2_int_cards);
+
+    p2_int_cards[0] = 18;
+    p2_int_cards[1] = 31;
+    p2_int_cards[2] = 22;
+    p2_int_cards[3] = 39;
+    p2_int_cards[4] = 26;
+
+    change((char*)p2_char_cards, p2_int_cards);
+
+    sort((char*)p2_char_cards);
+
+    for(int i=0; i<5; i++){
+        printf("%c%c ", p2_char_cards[i][0], p2_char_cards[i][1]);
+    }
+    printf("\n");
+
+    int player2 = compare((char*)p2_char_cards);
+
+    if(player1 < player2){
+        for(int i=0; i<5; i++)
+            printf("%c%c ", p1_char_cards[i][0], p1_char_cards[i][1]);
+    }
+    else if(player2 < player1){
+        for(int i=0; i<5; i++)
+            printf("%c%c ", p2_char_cards[i][0], p2_char_cards[i][1]);
+    }
+    else{
+        for(int i=4; i>=0; i--){
+            if(number(p1_char_cards[i][1]) > number(p2_char_cards[i][1])){
+                for(int j=0; j<5; j++)
+                    printf("%c%c ", p1_char_cards[j][0], p1_char_cards[j][1]);
+                break;
+            }
+            else if(number(p1_char_cards[i][1]) < number(p2_char_cards[i][1])){
+                for(int j=0; j<5; j++)
+                    printf("%c%c ", p2_char_cards[j][0], p2_char_cards[j][1]);
+                break;
+            }
+        }
+    }
+
+    return 0;
 }
 
-int main(void) {
-	srand((unsigned)time(NULL));
+int compare(char* char_cards){
+    int check = 0;
+    for(int i=0; i<7; i++){
+        switch(i)
+        {
+            case 0: check = four_of_a_kind(char_cards); if(check){printf("Four of a kind\n"); return 0-check;}       break;
+            case 1: check = full_house(char_cards);     if(check){printf("Full house\n"); return 20-check;}          break;
+            case 2: check = flush(char_cards);          if(check){printf("Flush\n"); return 40-check;}               break;
+            case 3: check = straight(char_cards);       if(check){printf("Straight\n"); return 60-check;}            break;
+            case 4: check = three_of_a_kind(char_cards);if(check){printf("Three of a kind\n"); return 80-check;}     break;
+            case 5: check = two_pair(char_cards);       if(check){printf("Two pair\n"); return 100-check;}           break;
+            case 6: check = one_pair(char_cards);       if(check){printf("One pair\n"); return 120-check;}           break;
+        }
 
-	int **Maze = (int**)malloc(L * sizeof(int *));
-	for (int i = 0; i < L; i++) {
-		Maze[i] = (int*)calloc(L, sizeof(int));
-	}
+        if(check) break;
+    }
 
-	//最外围层设为路径的原因，为了防止挖路时挖出边界，同时为了保护迷宫主体外的一圈墙体被挖穿
-	for (int i = 0; i < L; i++){
-		Maze[i][0] = ROUTE;
-		Maze[0][i] = ROUTE;
-		Maze[i][L - 1] = ROUTE;
-		Maze[L - 1][i] = ROUTE;
-	}
-
-	//创造迷宫，（2，2）为起点
-	CreateMaze(Maze, 2, 2);
-
-	//画迷宫的入口和出口
-	for (int i = L - 3; ; i--) {
-        int temp = rand() %(L-3) +1;
-		if (Maze[temp][2] == ROUTE) {
-			Maze[temp][1] = ROUTE;
-			break;
-		}
-	}
-
-	//由于算法随机性，出口有一定概率不在（L-3,L-2）处，此时需要寻找出口
-	for (int i = L - 3; ; i--) {
-        int temp = rand() %(L-3) +1;
-		if (Maze[temp][L-3] == ROUTE) {
-			Maze[temp][L-2] = ROUTE;
-			break;
-		}
-	}
-
-	//画迷宫
-	print_maze(Maze);
-
-	for (int i = 0; i < L; i++) free(Maze[i]);
-	free(Maze);
-
-	system("pause");
-	return 0;
+    if(check == 0){
+        printf("High card\n");
+        return 140;
+    }
 }
 
-void CreateMaze(int **maze, int x, int y) {
-	maze[x][y] = ROUTE;
+void deal_5cards(int* cards){
 
-	//确保四个方向随机
-	int direction[4][2] = { { 1,0 },{ -1,0 },{ 0,1 },{ 0,-1 } };
-	for (int i = 0; i < 4; i++) {
-		int r = rand() % 4;
-		int temp = direction[0][0];
-		direction[0][0] = direction[r][0];
-		direction[r][0] = temp;
+    int row = 0;
+    int col = 0;
 
-		temp = direction[0][1];
-		direction[0][1] = direction[r][1];
-		direction[r][1] = temp;
-	}
+    for(int i=0; i<5;){
+        row = rand()%4;
+        col = rand()%13;
 
-	//向四个方向开挖
-	for (int i = 0; i < 4; i++) {
+        if(check[row][col] == 0){
+            cards[i] = (row)*13 + (col+1);
+            i++;
+        }
 
-		int dx = x;
-		int dy = y;
+        check[row][col] = 1;
+    }
+}
 
-		//控制挖的距离，由Rank来调整大小
-		int range = 1 + (Rank == 0 ? 0 : rand() % Rank);
-		while (range>0) {
-			dx += direction[i][0];
-			dy += direction[i][1];
+void change(char* c_cards, int* i_cards){
 
-			//排除掉回头路
-			if (maze[dx][dy] == ROUTE) {
-				break;
-			}
+    for(int i=0; i<5; i++){
+        switch((i_cards[i]-1)/13)
+        {
+            case 0: *(c_cards+i*2) = 'S'; break;
+            case 1: *(c_cards+i*2) = 'H'; break;
+            case 2: *(c_cards+i*2) = 'D'; break;
+            case 3: *(c_cards+i*2) = 'C'; break;
+        }
 
-			//判断是否挖穿路径
-			int count = 0;
-			for (int j = dx - 1; j < dx + 2; j++) {
-				for (int k = dy - 1; k < dy + 2; k++) {
-					//abs(j - dx) + abs(k - dy) == 1 确保只判断九宫格的四个特定位置
-					if (abs(j - dx) + abs(k - dy) == 1 && maze[j][k] == ROUTE) {
-						count++;
-					}
-				}
-			}
+        int temp = (i_cards[i]-1)%13;
+        switch(temp)
+        {
+            case 0: *(c_cards+i*2+1) = 'A'; break;
+            case 1 ... 8: *(c_cards+i*2+1) = '0'+temp+1; break;
+            case 9: *(c_cards+i*2+1) = 'T'; break;
+            case 10: *(c_cards+i*2+1) = 'J'; break;
+            case 11: *(c_cards+i*2+1) = 'Q'; break;
+            case 12: *(c_cards+i*2+1) = 'K'; break;
+        }
 
-			if (count > 1) {
-				break;
-			}
 
-			//确保不会挖穿时，前进
-			--range;
-			maze[dx][dy] = ROUTE;
-		}
+    }
+}
 
-		//没有挖穿危险，以此为节点递归
-		if (range <= 0) {
-			CreateMaze(maze, dx, dy);
-		}
-	}
+void sort(char* c_cards){
+    int temp1 = 0;
+    int temp2 = 0;
+    for(int i=4; i>=0; i--){
+        for(int j=0; j<i; j++){
+
+            temp1 = number(*(c_cards+j*2+1));
+            temp2 = number(*(c_cards+(j+1)*2+1));
+            if(temp1 > temp2){
+                int temp = *(c_cards+j*2+1);
+                *(c_cards+j*2+1) = *(c_cards+(j+1)*2+1);
+                *(c_cards+(j+1)*2+1) = temp;
+            }
+        }
+    }
+}
+
+int four_of_a_kind(char* c_cards){
+    if(*(c_cards+1) == *(c_cards+7) || *(c_cards+3) == *(c_cards+9)) return number(*(c_cards+3));
+    return 0;
+}
+
+int full_house(char* c_cards){
+    if((*(c_cards+1) == *(c_cards+5) && *(c_cards+7) == *(c_cards+9))
+    || (*(c_cards+9) == *(c_cards+5) && *(c_cards+1) == *(c_cards+3))) return number(*(c_cards+5));
+
+    return 0;
+}
+
+int flush(char* c_cards){
+    for(int i=0; i<4; i++)
+    {
+        if(*(c_cards+i*2) != *(c_cards+(i+1)*2)) return 0;
+    }
+    return number(*(c_cards+9));
+}
+
+int straight(char* c_cards){
+    for(int i=0; i<4; i++)
+    {
+        int temp1 = number(*(c_cards+i*2+1));
+        int temp2 = number(*(c_cards+(i+1)*2+1));
+        if(temp1+1 != temp2) return 0;
+    }
+    return number(*(c_cards+9));
+}
+int three_of_a_kind(char* c_cards){
+    if(*(c_cards+1) == *(c_cards+5) ||
+       *(c_cards+5) == *(c_cards+9)) return number(*(c_cards+5));
+    else if(*(c_cards+3) == *(c_cards+7)) return number(*(c_cards+3));
+
+    return 0;
+}
+int two_pair(char* c_cards){
+    int count = 0;
+    int index = 0;
+    for(int i=0; i<4; i++)
+    {
+        int temp1 = number(*(c_cards+i*2+1));
+        int temp2 = number(*(c_cards+(i+1)*2+1));
+
+        if(temp1 == temp2){
+            count++;
+            index = i;
+        }
+    }
+    if(count == 2) return number(*(c_cards+(index)*2+1));
+    return 0;
+}
+
+int one_pair(char* c_cards){
+    int count = 0;
+    int index = 0;
+    for(int i=0; i<4; i++)
+    {
+        int temp1 = number(*(c_cards+i*2+1));
+        int temp2 = number(*(c_cards+(i+1)*2+1));
+
+        if(temp1 == temp2){
+            count++;
+            index = i;
+        }
+    }
+    if(count == 1) return number(*(c_cards+(index)*2+1));
+    return 0;
 }
