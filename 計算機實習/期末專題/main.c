@@ -22,18 +22,20 @@ int main()
             if(size == 0) break;
 
             //輸入寬度 (fread)
+            _Bool range_of_input = 0;
             int arr_num_appear[200] = {};
             int arr_width[size];
             for(int i=0, input=0; i<size; i++)
             {
                 fscanf(file, "%d", &input);
                 arr_width[i] = input;
-                arr_num_appear[input-1]++;
+                if(input <= 200 && input >= 1) arr_num_appear[input-1]++;
+                else range_of_input = 1;
             }
 
             int Decoded_num_size = (size+1)/6-4;
 
-            if((size+1)%6 != 0 || Decoded_num_size <= 0 || size > 150){
+            if((size+1)%6 != 0 || Decoded_num_size <= 0 || size > 150 || range_of_input){
                 printf("Case %d:bad code\n", x);
                 game = SKIP;
             }
@@ -63,7 +65,6 @@ int main()
 
                 if(run_decode){
                     //======================================施工中===================================================
-                    //加上bad code： decode function 如果中間沒有回傳 則輸出bad code 且跳出運作
                     int begin_to_end = check_start_end_success(arr_width, size);
                     int str_length = 0;
 
@@ -79,8 +80,8 @@ int main()
                             else if(j == Decoded_num_size+1) K = decode(arr_width, i, 1);
                             else if(j == Decoded_num_size+2) break;
                             else{
-                                    str_length++;
-                                    Decoded_num[j] = decode(arr_width, i, 1);
+                                str_length++;
+                                Decoded_num[j] = decode(arr_width, i, 1);
                             }
 
                             if(Decoded_num[j] == ';' || C == ';' || K == ';'){
@@ -93,7 +94,7 @@ int main()
                                 printf("Case %d:bad code\n", x);
                                 break;
                             }
-                            //printf("%c %c %c", Decoded_num[j], C, K);
+                            //printf("%c %c %c\n", Decoded_num[j], C, K);
                         }
                         //判斷CK
                         if(game != SKIP)
