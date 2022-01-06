@@ -9,9 +9,9 @@ int main()
 {
     FILE* file;
 
-    if((file = fopen("00.test.txt","r")) == NULL)
+    if((file = fopen("test.txt","r")) == NULL)
     {
-        printf("File could'n be opened.\n");
+        printf("File couldn't be opened.\n");
     }
     else
     {
@@ -113,7 +113,6 @@ int main()
                     }
                     else if(begin_to_end == 2){
                         //end to begin
-                        //======================================施工中===================================================
                         char C = '0',K = '0';
                         for(int i=size-7, j=0; i>=6; i-=6, j++){
 
@@ -144,7 +143,6 @@ int main()
                                 printf("Case %d:bad K\n", x);
                             }
                         }
-                        //======================================施工中===================================================
                     }
                     else{
                         game = SKIP;

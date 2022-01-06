@@ -4,7 +4,7 @@
 #include<windows.h>
 
 //地图长度L，包括迷宫主体40，外侧的包围的墙体2，最外侧包围路径2（之后会解释）
-#define L 14
+#define L 50
 
 //墙和路径的标识
 #define WALL  0
