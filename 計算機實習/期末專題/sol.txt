@@ -1,0 +1,20 @@
+﻿1         narrow bar:38                4-895-9271
+2         narrow bar:45                460624610495114-51903
+3         narrow bar:68                30137039029054-30404
+4         narrow bar:48                bad C
+5         narrow bar:45                0074900959064902
+6         narrow bar:64                bad K
+7         narrow bar:93                415973619375-611927
+8         narrow bar:91                bad code(長度不符)
+9         narrow bar:31                024
+10        narrow bar:87                bad C
+11        narrow bar:56                bad K
+12        narrow bar:20                bad code(start code invalid)
+13        narrow bar:36                0-7865-4  (基準值沒出現在輸入裡)
+14        narrow bar:36                -71218
+15        narrow bar:85                bad code( 寬度超過5% )
+16        narrow bar:47                bad K
+17        narrow bar:84                7
+18        narrow bar:56                bad code (code 不存在 11111)
+19        narrow bar:49                6955-017-8655
+20        narrow bar:65                bad code( 寬度超過5% )

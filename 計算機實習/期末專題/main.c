@@ -81,7 +81,7 @@ int main()
                             else if(j == Decoded_num_size+2) break;
                             else{
                                 str_length++;
-                                Decoded_num[j] = decode(arr_width, i, 1);
+                                Decoded_num[j] = decode(arr_width, i, 1);//printf("%c", Decoded_num[j]);
                             }
 
                             if(Decoded_num[j] == ';' || C == ';' || K == ';'){
@@ -125,6 +125,11 @@ int main()
                             }
 
                             if(Decoded_num[j] == ';' || C == ';' || K == ';'){
+                                game = SKIP;
+                                printf("Case %d:bad code\n", x);
+                                break;
+                            }
+                            if(Decoded_num[j] == 'X' || C == 'X' || K == 'X'){ //忘記複製過來
                                 game = SKIP;
                                 printf("Case %d:bad code\n", x);
                                 break;
